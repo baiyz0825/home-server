@@ -1,0 +1,203 @@
+version: '3.8'
+services: 
+  qbittorrent:
+   container_name: qbittorrent
+   image: linuxserver/qbittorrent:latest
+   ports:
+    - "8080:8080"
+    - "6881:6881"
+    - "26044:26044"
+   restart: always
+   networks:
+     - home_app
+   volumes:
+    - /home/byz/docker/Qb:/config:rw 
+    - /mnt/nfs/Amus/downloads:/downloads 
+    - /mnt/nfs/Amus1/downloads:/downloads_amus1 
+    - /mnt/nfs/Seed-PT/downloads:/downloads_seed 
+   environment:
+    - PGID="0" 
+    - TZ="Asia/Shanghai" 
+    - WEBUI_PORT="8080"
+   deploy:     
+    resources:
+      limits:
+        memory: 1024M       
+    restart_policy:
+      condition: on-failure
+      delay: 5s
+      max_attempts: 3
+      window: 120s   
+  Emby:
+    container_name: Emby
+    image: lovechen/embyserver:latest
+    ports:
+      - "8096:8096"
+      - "8920:8920" 
+    restart: always
+    depends_on:
+      - Xteve
+    networks:
+      - home_app  
+    volumes:
+      - /home/byz/docker/EmbyServer:/config
+      - /mnt/nfs/Amus/影视:/media/share1
+      - /mnt/nfs/Amus1/影视:/media/share2
+    environment:
+      - TZ=Asia/Shanghai
+      - UID=0
+      - GID=0
+      - GIDLIST=0
+    deploy:
+      resources:
+        limits:
+          memory: 1024M        
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s   
+  transmission:
+    container_name: transmission
+    image: chisbread/transmission:latest
+    ports:
+      - "9091:9091"
+      - "51413:51413"  
+    restart: always
+    networks:
+      - home_app
+    volumes:
+      - "/home/byz/docker/transmission/data/config:/config"
+      - "/mnt/nfs/Amus1/downloads:/downloads_amus1"
+      - "/mnt/nfs/Amus/downloads:/downloads"
+    environment:
+      - TZ=Asia/Shanghai
+    deploy:     
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s           
+      resources:
+        limits:
+          memory: 256M                      
+  IYUUPlus:
+    container_name: IYUUPlus
+    image: iyuucn/iyuuplus:latest
+    depends_on:
+      - transmission
+      - qbittorrent
+    ports:
+      - "8787:8787"
+    restart: always
+    networks:
+      - home_app    
+    volumes:
+      - "/home/byz/docker/iyuuplus/db:/IYUU/db"
+      - "/home/byz/docker/Qb/qBittorrent/BT_backup:/qbseed"
+      - "/home/byz/docker/transmission/data/config/torrents:/tr"
+    deploy:     
+      resources:
+        limits:
+          memory: 128M        
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s   
+  vaultwarden:
+    container_name: vaultwarden
+    image: vaultwarden/server:latest
+    ports: 
+      - "4679:80"
+    restart: always
+    networks:
+      - home_app
+    volumes:
+      - "/mnt/nfs/bitwarden-data/:/data/"
+    deploy:     
+      resources:
+        limits:
+          memory: 128M        
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s         
+  Xteve: 
+    container_name: Xteve
+    image: alturismo/xteve_guide2go
+    restart: always
+    ports:
+      - "34400:34400"
+    networks:
+      - home_app
+    volumes:
+      - "/home/byz/docker/xteve/:/root/.xteve"
+      - "/home/byz/docker/xteve/_config/:/config"
+      - "/home/byz/docker/xteve/_guide2go/:/guide2go"
+    deploy:     
+      resources:
+        limits:
+          memory: 64M        
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s         
+  Movie-Robot:
+    container_name: Movie-Robot
+    image: yipengfei/movie-robot:beta
+    depends_on:
+      - qbittorrent
+      - Emby
+    ports:
+      - "1329:1329"
+    networks:
+      - home_app    
+    restart: always
+    volumes:
+      - "/home/byz/docker/movieBot:/data"
+      - "/mnt/nfs/Amus:/Amus"
+      - "/mnt/nfs/Amus1:/Amus1"
+      - "/mnt/nfs/Seed-PT:/Seed-PT"
+    environment:
+      - LICENSE_KEY=iVycfjLh25snj7ATWKIV9JbN49mbyr4mAmIIGv7N9PmSeF43mV9YmXuDN5IOvhpzcLCkFtmW9Vj51gHvVXz5sLRkX2TCZDWfuZT5B3BbgHhgcSxGgRmQlNvNui5iwcsB
+    deploy:     
+      resources:
+        limits:
+          memory: 256M        
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s 
+  VGPU:
+    container_name: VGPU
+    image:  makedie/fastapi-dls
+    ports:
+      - "9989:443"
+    networks:
+      - home_app    
+    restart: always
+    volumes:
+      - "/home/byz/docker/vgpuCert/databse:/app/database"
+    environment:
+      - DLS_PORT=9989
+    deploy:     
+      resources:
+        limits:
+          memory: 64M        
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s 
+networks:
+  home_app:
+    driver: bridge
