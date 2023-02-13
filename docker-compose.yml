@@ -121,7 +121,7 @@ services:
     volumes:
       - "/home/byz/docker/bitwarden-data/:/data/"
     environment:
-      - ADMIN_TOKEN="Byz2000adgh0825@vaultdata"
+      - ADMIN_TOKEN="xxxx"
       - SIGNUPS_ALLOWED=false
     deploy:     
       resources:
