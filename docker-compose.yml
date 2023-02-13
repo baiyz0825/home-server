@@ -22,7 +22,7 @@ services:
    deploy:     
     resources:
       limits:
-        memory: 1024M       
+        memory: 1536M       
     restart_policy:
       condition: on-failure
       delay: 5s
@@ -51,7 +51,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 2048M        
+          memory: 2560M        
         reservations:
           devices:
             - driver: nvidia
@@ -85,7 +85,7 @@ services:
         window: 120s           
       resources:
         limits:
-          memory: 256M                      
+          memory: 512M                      
   IYUUPlus:
     container_name: IYUUPlus
     image: iyuucn/iyuuplus:latest
@@ -121,11 +121,12 @@ services:
     volumes:
       - "/home/byz/docker/bitwarden-data/:/data/"
     environment:
-      - ADMIN_TOKEN=""
+      - ADMIN_TOKEN="Byz2000adgh0825@vaultdata"
+      - SIGNUPS_ALLOWED=false
     deploy:     
       resources:
         limits:
-          memory: 128M        
+          memory: 512M        
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -141,12 +142,12 @@ services:
       - home_app
     volumes:
       - "/home/byz/docker/xteve/:/root/.xteve"
-      - "/home/byz/docker/xteve/_config/:/config"
-      - "/home/byz/docker/xteve/_guide2go/:/guide2go"
+      - "/home/byz/docker/xteve/config/:/config"
+      - "/home/byz/docker/xteve/guide2go/:/guide2go"
     deploy:     
       resources:
         limits:
-          memory: 64M        
+          memory: 128M        
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -154,7 +155,7 @@ services:
         window: 120s         
   Movie-Robot:
     container_name: Movie-Robot
-    image: yipengfei/movie-robot:beta
+    image: yipengfei/movie-robot:beta@latest
     depends_on:
       - qbittorrent
       - Emby
@@ -173,7 +174,7 @@ services:
     deploy:     
       resources:
         limits:
-          memory: 256M        
+          memory: 512M        
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -199,7 +200,7 @@ services:
         condition: on-failure
         delay: 5s
         max_attempts: 3
-        window: 120s 
+        window: 120s   
 networks:
   home_app:
     driver: bridge
