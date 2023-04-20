@@ -38,4 +38,4 @@ jobs:
           WECHAT_WORK_BOT_WEBHOOK: ${{secrets.WECHAT_WORK_BOT_WEBHOOK}}
         with:
           msgtype: markdown
-          content: "镜像制品打包完成^~^ \n > 仓库: [${{ github.repository }}](${{ github.event.repository.url }}) \n > 制品: []() \n > 提交记录: [commit](${{ github.event.repository.html_url }}/commit/${{ github.sha }}) \n > 提交者: ${{ steps.getDataPushMsg.outputs.user_name }} \n > 提交者Email: ${{ steps.getDataPushMsg.outputs.user_email }} \n > 更新内容: ${{ steps.getDataPushMsg.outputs.commit_msg }} \n"
+          content: "镜像制品打包完成^~^ \n > 仓库: [${{ github.repository }}](${{ github.event.repository.url }}) \n > 制品: []() \n > 提交记录: [commit](${{ github.event.repository.html_url }}/commit/${{ github.sha }}) \n > 提交者: ${{ steps.getDataPushMsg.outputs.user_name }} \n > 提交者Email: [${{ steps.getDataPushMsg.outputs.user_email }}](mailto:${{ steps.getDataPushMsg.outputs.user_email }}) \n > 更新内容: ${{ steps.getDataPushMsg.outputs.commit_msg }} \n"
