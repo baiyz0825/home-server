@@ -29,9 +29,9 @@ jobs:
       - name: 获取推送信息
         id: getDataPushMsg
         run: |
-          echo "::set-output name=user_email::$(git log -n 1 --pretty=format:%ae)"
-          echo "::set-output name=user_name::$(git log -1 --pretty=format:'%an')"
-          echo "::set-output name=commit_msg::$(git log -1 --pretty=%B)"
+          echo "user_email$(=git log -n 1 --pretty=format:%ae)" >> $GITHUB_OUTPUT
+          echo "user_name=$(git log -1 --pretty=format:'%an')" >> $GITHUB_OUTPUT
+          echo "commit_msg=$(git log -1 --pretty=%B)" >> $GITHUB_OUTPUT
       - name: WeChat Work notification by markdown
         uses: chf007/action-wechat-work@master
         env:
