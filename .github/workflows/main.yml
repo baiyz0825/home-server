@@ -22,17 +22,14 @@ jobs:
   sendMsg:
     runs-on: ubuntu-latest
     steps:
+      - name: 拉取仓库
+        uses: actions/checkout@v3
+      # Install the cosign tool except on PR
+      # https://github.com/sigstore/cosign-installer
       - name: WeChat Work notification by markdown
         uses: chf007/action-wechat-work@master
         env:
           WECHAT_WORK_BOT_WEBHOOK: ${{secrets.WECHAT_WORK_BOT_WEBHOOK}}
         with:
           msgtype: markdown
-          content: | 
-            镜像制品打包完成^~^\n
-            > 仓库: [${GITHUB_REPOSITORY}](${{ github.event.repository.url }}) \n 
-            > 制品: []() \n
-            > 提交记录: [commit](${{ github.event.repository.html_url }}/commit/${{ github.sha }}) \n \
-            > 提交者: $(git log -1 --pretty=format:'%an') \n \
-            > 提交者Email: $(git log -1 --pretty=format:'%ae') \n \
-            > 更新内容: $(git log -1 --pretty=%B) "
+          content: "镜像制品打包完成^~^ \n > 仓库: [${GITHUB_REPOSITORY}](${{ github.event.repository.url }}) \n > 制品: []() \n > 提交记录: [commit](${{ github.event.repository.html_url }}/commit/${{ github.sha }}) \n > 提交者: $(git log -1 --pretty=format:'%an') \n > 提交者Email: $(git log -1 --pretty=format:'%ae') \n > 更新内容: $(git log -1 --pretty=%B)\n"
