@@ -1,0 +1,38 @@
+name: 测试推送
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+on:
+  push:
+    branches: [ "main" ]
+    # Publish semver tags as releases.
+    tags: [ 'v*.*.*' ]
+  workflow_dispatch:
+  
+# 仅允许管理员手动执行
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  checks: write
+  
+jobs:
+  sendMsg:
+    runs-on: ubuntu-latest
+    steps:
+      - name: WeChat Work notification by markdown
+        uses: chf007/action-wechat-work@master
+        env:
+          WECHAT_WORK_BOT_WEBHOOK: ${{secrets.WECHAT_WORK_BOT_WEBHOOK}}
+        with:
+          msgtype: markdown
+          content: | 
+            镜像制品打包完成^~^\n
+            > 仓库: [${GITHUB_REPOSITORY}](${{ github.event.repository.url }}) \n 
+            > 制品: []() \n
+            > 提交记录: [commit](${{ github.event.repository.html_url }}/commit/${{ github.sha }}) \n \
+            > 提交者: $(git log -1 --pretty=format:'%an') \n \
+            > 提交者Email: $(git log -1 --pretty=format:'%ae') \n \
+            > 更新内容: $(git log -1 --pretty=%B) "
